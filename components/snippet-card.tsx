@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Eye, ExternalLink, Play, Pause, User } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { likeUnlikeSnippet } from "@/store/slices/snippetsSlice";
 
 // Mock snippet data structure
 const mockSnippet = {
@@ -24,6 +26,7 @@ const mockSnippet = {
     avatarUrl: "/api/placeholder/40/40",
     githubUrl: "https://github.com/johndoe",
   },
+  isLiked: false,
   createdAt: "2024-01-15",
   updatedAt: "2024-01-20",
   likes: 142,
@@ -41,6 +44,17 @@ export const SnippetCard = ({
   const [isHovered, setIsHovered] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isLiked, setIsLiked] = useState(snippet.isLiked);
+  const [likeCount, setLikeCount] = useState(snippet.likes);
+
+  const dispatch = useAppDispatch();
+  const { loading, error } = useAppSelector((s) => s.snippets);
+
+  useEffect(() => {
+    // Sync local state if props change from parent (e.g., after Redux update)
+    setIsLiked(snippet.isLiked);
+    setLikeCount(snippet.likes);
+  }, [snippet.isLiked, snippet.likes]);
 
   useEffect(() => {
     // Animate card entrance with anime.js style timing
@@ -142,8 +156,6 @@ export const SnippetCard = ({
             <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-gray-700 rounded-full"></div>
             <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-gray-700 rounded-full"></div>
           </div>
-
-         
         </div>
       </div>
 
@@ -210,13 +222,22 @@ export const SnippetCard = ({
         <div className="flex items-center justify-between pt-2 border-t border-[#2f2f45]">
           <div className="flex items-center gap-4">
             <motion.div
-              className="flex items-center gap-1 text-gray-400 hover:text-red-400 transition-colors duration-200 cursor-pointer"
+              className={`flex items-center gap-1 cursor-pointer transition-colors duration-200 ${
+                isLiked ? "text-red-400" : "text-gray-400 hover:text-red-400"
+              }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                dispatch(likeUnlikeSnippet(snippet.slug));
+                // Optimistically update UI using local state
+                const newLikedState = !isLiked;
+                setIsLiked(newLikedState);
+                setLikeCount(newLikedState ? likeCount + 1 : likeCount - 1);
+              }}
             >
-              <Heart className="w-4 h-4" />
+              <Heart className={`w-4 h-4 ${isLiked ? "fill-current" : ""}`} />
               <span className="text-sm font-medium">
-                {formatNumber(snippet.likes)}
+                {formatNumber(likeCount)}
               </span>
             </motion.div>
             <div className="flex items-center gap-1 text-gray-400">

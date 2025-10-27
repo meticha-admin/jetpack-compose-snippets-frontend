@@ -102,6 +102,27 @@ export const fetchSingleSnippet = createAsyncThunk<
   }
 });
 
+// like likeUnlikeSnippet, action to like and unLike single snippet
+export const likeUnlikeSnippet = createAsyncThunk<
+  SnippetResponseDto,
+  String,
+  { rejectValue: string }
+>("snippets/likeUnlikeSnippet", async (slug, { rejectWithValue }) => {
+  try {
+    const response = await api.get(`/reaction/${slug}`, {
+      withCredentials: true,
+    });
+    // adapt depending on API shape
+    return response.data?.data ?? response.data ?? [];
+  } catch (err: any) {
+    const message =
+      err?.response?.data?.message ||
+      err?.message ||
+      "Failed to like/unlike snippet";
+    return rejectWithValue(message);
+  }
+});
+
 const snippetsSlice = createSlice({
   name: "snippets",
   initialState,
@@ -166,6 +187,25 @@ const snippetsSlice = createSlice({
         state.loading = false;
         state.error =
           action.payload ?? action.error.message ?? "Failed to fetch snippet";
+      })
+
+      // likeUnlikeSnippet handlers
+      .addCase(likeUnlikeSnippet.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        likeUnlikeSnippet.fulfilled,
+        (state, action: PayloadAction<SnippetResponseDto>) => {
+          state.loading = false;
+        }
+      )
+      .addCase(likeUnlikeSnippet.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.payload ??
+          action.error.message ??
+          "Failed to like/unlike snippet";
       });
   },
 });
