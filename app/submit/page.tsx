@@ -40,7 +40,7 @@ import { useDispatch } from "react-redux";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchCategories } from "@/store/slices/categoriesSlice";
 import { ca } from "zod/v4/locales";
-import { createSnippet } from "@/store/slices/snippetSlice";
+import { createSnippet } from "@/store/slices/snippetsSlice";
 
 const submitSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),

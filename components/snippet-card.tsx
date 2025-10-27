@@ -1,30 +1,41 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Eye, ExternalLink, Play, Pause, User } from 'lucide-react';
+import React, { useRef, useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Heart, Eye, ExternalLink, Play, Pause, User } from "lucide-react";
 
 // Mock snippet data structure
 const mockSnippet = {
   id: "1",
   slug: "animated-login-form",
   title: "Animated Login Form",
-  description: "A beautiful login form with smooth animations and material design components for modern Android apps.",
+  description:
+    "A beautiful login form with smooth animations and material design components for modern Android apps.",
   code: "@Composable\nfun LoginForm() {\n  // Implementation\n}",
   previewImage: "/api/placeholder/300/600", // Vertical mobile preview
-  previewVideo: "/api/placeholder/300/600", // Optional video
-  tags: ["Animation", "Login", "Material", "Form", "UI"],
-  author: {
-    name: "John Doe",
-    avatar: "/api/placeholder/40/40",
-    githubUrl: "https://github.com/johndoe"
+  previewUrl: "/api/placeholder/300/600", // Optional video
+  categories: [
+    { id: 1, name: "Animation" },
+    { id: 2, name: "Login" },
+    { id: 3, name: "Material" },
+    { id: 4, name: "UI" },
+    { id: 5, name: "Component" },
+  ],
+  user: {
+    username: "John Doe",
+    avatarUrl: "/api/placeholder/40/40",
+    githubUrl: "https://github.com/johndoe",
   },
   createdAt: "2024-01-15",
   updatedAt: "2024-01-20",
   likes: 142,
   views: 2847,
-  featured: true
+  featured: true,
 };
 
-export const SnippetCard = ({ snippet = mockSnippet }: { snippet?: typeof mockSnippet }) => {
+export const SnippetCard = ({
+  snippet = mockSnippet,
+}: {
+  snippet?: typeof mockSnippet;
+}) => {
   const cardRef = useRef<HTMLDivElement | null>(null);
   const previewRef = useRef<HTMLVideoElement | null>(null);
   const [isHovered, setIsHovered] = useState(false);
@@ -36,13 +47,13 @@ export const SnippetCard = ({ snippet = mockSnippet }: { snippet?: typeof mockSn
     const animateCard = () => {
       if (cardRef.current) {
         const el = cardRef.current;
-        el.style.transform = 'translateY(30px)';
-        el.style.opacity = '0';
+        el.style.transform = "translateY(30px)";
+        el.style.opacity = "0";
         setTimeout(() => {
           if (!el) return;
-          el.style.transition = 'all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-          el.style.transform = 'translateY(0)';
-          el.style.opacity = '1';
+          el.style.transition = "all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+          el.style.transform = "translateY(0)";
+          el.style.opacity = "1";
         }, 100);
       }
     };
@@ -64,10 +75,9 @@ export const SnippetCard = ({ snippet = mockSnippet }: { snippet?: typeof mockSn
     }
   };
 
-  const formatNumber = (num: number) => {
-    if (num >= 1000) {
-      return (num / 1000).toFixed(1) + 'k';
-    }
+  const formatNumber = (num?: number | null) => {
+    if (num == null || isNaN(num)) return "0"; // handle undefined/null
+    if (num >= 1000) return (num / 1000).toFixed(1) + "k";
     return num.toString();
   };
 
@@ -92,12 +102,12 @@ export const SnippetCard = ({ snippet = mockSnippet }: { snippet?: typeof mockSn
         <div className="relative">
           <div className="relative w-48 h-96 bg-black rounded-[2rem] p-2 shadow-xl">
             <div className="w-full h-full bg-[#121212] rounded-[1.5rem] overflow-hidden relative">
-              {snippet.previewVideo ? (
+              {snippet.previewUrl ? (
                 <>
                   <video
                     ref={previewRef}
                     className="w-full h-full object-cover"
-                    src={snippet.previewVideo}
+                    src={snippet.previewUrl}
                     poster={snippet.previewImage}
                     muted
                     loop
@@ -133,13 +143,7 @@ export const SnippetCard = ({ snippet = mockSnippet }: { snippet?: typeof mockSn
             <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-gray-700 rounded-full"></div>
           </div>
 
-          <motion.div
-            className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg"
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            <div className="w-2 h-2 bg-white rounded-full"></div>
-          </motion.div>
+         
         </div>
       </div>
 
@@ -158,10 +162,10 @@ export const SnippetCard = ({ snippet = mockSnippet }: { snippet?: typeof mockSn
         {/* Author */}
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center overflow-hidden">
-            {snippet.author.avatar ? (
+            {snippet.user.avatarUrl ? (
               <img
-                src={snippet.author.avatar}
-                alt={snippet.author.name}
+                src={snippet.user.avatarUrl}
+                alt={snippet.user.username}
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -169,12 +173,14 @@ export const SnippetCard = ({ snippet = mockSnippet }: { snippet?: typeof mockSn
             )}
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-200">{snippet.author.name}</p>
+            <p className="text-sm font-medium text-gray-200">
+              {snippet.user.username}
+            </p>
             <p className="text-xs text-gray-500">
-              {new Date(snippet.createdAt).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric'
+              {new Date(snippet.createdAt).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
               })}
             </p>
           </div>
@@ -182,20 +188,20 @@ export const SnippetCard = ({ snippet = mockSnippet }: { snippet?: typeof mockSn
 
         {/* Tags */}
         <div className="flex flex-wrap gap-2">
-          {snippet.tags.slice(0, 3).map((tag, index) => (
+          {snippet.categories.slice(0, 3).map((tag, index) => (
             <motion.span
-              key={tag}
+              key={tag.name}
               className="px-3 py-1 bg-[#343449] text-gray-300 rounded-full text-xs font-medium hover:bg-[#44445f] transition-colors duration-200"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: isLoaded ? 1 : 0, scale: isLoaded ? 1 : 0.8 }}
               transition={{ delay: 0.3 + index * 0.1 }}
             >
-              {tag}
+              {tag.name}
             </motion.span>
           ))}
-          {snippet.tags.length > 3 && (
+          {snippet.categories.length > 3 && (
             <span className="px-3 py-1 bg-[#2e2e40] text-gray-400 rounded-full text-xs font-medium">
-              +{snippet.tags.length - 3}
+              +{snippet.categories.length - 3}
             </span>
           )}
         </div>
@@ -209,11 +215,15 @@ export const SnippetCard = ({ snippet = mockSnippet }: { snippet?: typeof mockSn
               whileTap={{ scale: 0.95 }}
             >
               <Heart className="w-4 h-4" />
-              <span className="text-sm font-medium">{formatNumber(snippet.likes)}</span>
+              <span className="text-sm font-medium">
+                {formatNumber(snippet.likes)}
+              </span>
             </motion.div>
             <div className="flex items-center gap-1 text-gray-400">
               <Eye className="w-4 h-4" />
-              <span className="text-sm font-medium">{formatNumber(snippet.views)}</span>
+              <span className="text-sm font-medium">
+                {formatNumber(snippet.views)}
+              </span>
             </div>
           </div>
 
@@ -244,6 +254,5 @@ export const SnippetCard = ({ snippet = mockSnippet }: { snippet?: typeof mockSn
         )}
       </AnimatePresence>
     </motion.div>
-
   );
 };

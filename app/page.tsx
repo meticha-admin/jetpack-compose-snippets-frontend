@@ -8,7 +8,7 @@ export default function HomePage() {
     <main className="min-h-screen bg-gray-950">
       <Navigation />
       <HeroSection />
-      <FeaturedSnippets />
+      {/* <FeaturedSnippets /> */}
       <Footer />
     </main>
   )

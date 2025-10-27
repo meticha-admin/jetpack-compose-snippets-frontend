@@ -1,55 +1,60 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
-import { Navigation } from "@/components/navigation"
-import { Footer } from "@/components/footer"
-import { SnippetCard } from "@/components/snippet-card"
-import { SnippetFilters } from "@/components/snippet-filters"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Search, Loader2 } from "lucide-react"
-import { mockApiService, type Snippet } from "@/lib/services/api"
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Navigation } from "@/components/navigation";
+import { Footer } from "@/components/footer";
+import { SnippetCard } from "@/components/snippet-card";
+import { SnippetFilters } from "@/components/snippet-filters";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search, Loader2 } from "lucide-react";
+import { mockApiService, type Snippet } from "@/lib/services/api";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchSnippets } from "@/store/slices/snippetsSlice";
 
 export default function SnippetsPage() {
-  const [snippets, setSnippets] = useState<Snippet[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [selectedTags, setSelectedTags] = useState<string[]>([])
-  const [sortBy, setSortBy] = useState<"newest" | "popular" | "featured">("newest")
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
+  // const [snippets, setSnippets] = useState<Snippet[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [sortBy, setSortBy] = useState<"newest" | "popular" | "featured">(
+    "newest"
+  );
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const fetchSnippets = async () => {
-    setLoading(true)
+  const dispatch = useAppDispatch();
+  const { snippets, loading, error } = useAppSelector((s) => s.snippets);
+
+  const fetchAllSnippets = async () => {
     try {
-      const response = await mockApiService.getSnippets({
-        page: currentPage,
-        limit: 12,
-        tags: selectedTags,
-        sort: sortBy,
-        search: searchQuery,
-      })
-      setSnippets(response.data)
-      setTotalPages(response.pagination.totalPages)
+      // const response = await mockApiService.getSnippets({
+      //   page: currentPage,
+      //   limit: 12,
+      //   tags: selectedTags,
+      //   sort: sortBy,
+      //   search: searchQuery,
+      // });
+      // setTotalPages(response.pagination.totalPages);
+      await dispatch(fetchSnippets());
     } catch (error) {
-      console.error("Failed to fetch snippets:", error)
-    } finally {
-      setLoading(false)
+      console.error("Failed to fetch snippets:", error);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchSnippets()
-  }, [currentPage, selectedTags, sortBy, searchQuery])
+    fetchAllSnippets();
+  }, [currentPage, selectedTags, sortBy, searchQuery]);
 
   const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    setCurrentPage(1)
-    fetchSnippets()
-  }
+    e.preventDefault();
+    setCurrentPage(1);
+    fetchAllSnippets();
+  };
+
+  console.log(snippets);
 
   return (
     <main className="min-h-screen bg-gray-950">
@@ -68,7 +73,8 @@ export default function SnippetsPage() {
               <span className="gradient-text">Code</span> Snippets
             </h1>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              Discover and explore our curated collection of Jetpack Compose snippets
+              Discover and explore our curated collection of Jetpack Compose
+              snippets
             </p>
           </motion.div>
 
@@ -107,14 +113,14 @@ export default function SnippetsPage() {
           {/* Results */}
           {loading ? (
             <>
-              <motion.div className="animate-pulse grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"
+              <motion.div
+                className="animate-pulse grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
                 {/* Card */}
                 <div className="bg-[#1e1e2f] rounded-3xl border border-[#2a2a3b] overflow-hidden shadow-sm">
-
                   {/* Preview Section */}
                   <div className="bg-[#2b2b3d] p-6 flex justify-center items-center">
                     <div className="w-48 h-96 bg-[#121212] rounded-[2rem] relative">
@@ -145,7 +151,10 @@ export default function SnippetsPage() {
                     {/* Tags */}
                     <div className="flex gap-2 flex-wrap mt-4">
                       {[...Array(3)].map((_, i) => (
-                        <div key={i} className="h-6 w-16 bg-gray-700 rounded-full" />
+                        <div
+                          key={i}
+                          className="h-6 w-16 bg-gray-700 rounded-full"
+                        />
                       ))}
                     </div>
 
@@ -161,7 +170,6 @@ export default function SnippetsPage() {
                 </div>
                 {/* Card */}
                 <div className="bg-[#1e1e2f] rounded-3xl border border-[#2a2a3b] overflow-hidden shadow-sm">
-
                   {/* Preview Section */}
                   <div className="bg-[#2b2b3d] p-6 flex justify-center items-center">
                     <div className="w-48 h-96 bg-[#121212] rounded-[2rem] relative">
@@ -192,7 +200,10 @@ export default function SnippetsPage() {
                     {/* Tags */}
                     <div className="flex gap-2 flex-wrap mt-4">
                       {[...Array(3)].map((_, i) => (
-                        <div key={i} className="h-6 w-16 bg-gray-700 rounded-full" />
+                        <div
+                          key={i}
+                          className="h-6 w-16 bg-gray-700 rounded-full"
+                        />
                       ))}
                     </div>
 
@@ -208,7 +219,6 @@ export default function SnippetsPage() {
                 </div>
                 {/* Card */}
                 <div className="bg-[#1e1e2f] rounded-3xl border border-[#2a2a3b] overflow-hidden shadow-sm">
-
                   {/* Preview Section */}
                   <div className="bg-[#2b2b3d] p-6 flex justify-center items-center">
                     <div className="w-48 h-96 bg-[#121212] rounded-[2rem] relative">
@@ -239,7 +249,10 @@ export default function SnippetsPage() {
                     {/* Tags */}
                     <div className="flex gap-2 flex-wrap mt-4">
                       {[...Array(3)].map((_, i) => (
-                        <div key={i} className="h-6 w-16 bg-gray-700 rounded-full" />
+                        <div
+                          key={i}
+                          className="h-6 w-16 bg-gray-700 rounded-full"
+                        />
                       ))}
                     </div>
 
@@ -256,14 +269,18 @@ export default function SnippetsPage() {
               </motion.div>
             </>
           ) : snippets.length === 0 ? (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-20"
+            >
               <p className="text-gray-400 text-lg mb-4">No snippets found</p>
               <Button
                 onClick={() => {
-                  setSearchQuery("")
-                  setSelectedTags([])
-                  setSortBy("newest")
-                  setCurrentPage(1)
+                  setSearchQuery("");
+                  setSelectedTags([]);
+                  setSortBy("newest");
+                  setCurrentPage(1);
                 }}
                 variant="outline"
                 className="border-gray-600 text-white hover:bg-gray-800"
@@ -301,7 +318,9 @@ export default function SnippetsPage() {
                   className="flex justify-center gap-2"
                 >
                   <Button
-                    onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(1, prev - 1))
+                    }
                     disabled={currentPage === 1}
                     variant="outline"
                     className="border-gray-600 text-white hover:bg-gray-800 disabled:opacity-50"
@@ -310,24 +329,28 @@ export default function SnippetsPage() {
                   </Button>
 
                   <div className="flex items-center gap-2">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                      <Button
-                        key={page}
-                        onClick={() => setCurrentPage(page)}
-                        variant={currentPage === page ? "default" : "outline"}
-                        className={
-                          currentPage === page
-                            ? "bg-blue-600 hover:bg-blue-700"
-                            : "border-gray-600 text-white hover:bg-gray-800"
-                        }
-                      >
-                        {page}
-                      </Button>
-                    ))}
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (page) => (
+                        <Button
+                          key={page}
+                          onClick={() => setCurrentPage(page)}
+                          variant={currentPage === page ? "default" : "outline"}
+                          className={
+                            currentPage === page
+                              ? "bg-blue-600 hover:bg-blue-700"
+                              : "border-gray-600 text-white hover:bg-gray-800"
+                          }
+                        >
+                          {page}
+                        </Button>
+                      )
+                    )}
                   </div>
 
                   <Button
-                    onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                    }
                     disabled={currentPage === totalPages}
                     variant="outline"
                     className="border-gray-600 text-white hover:bg-gray-800 disabled:opacity-50"
@@ -343,5 +366,5 @@ export default function SnippetsPage() {
 
       <Footer />
     </main>
-  )
+  );
 }
