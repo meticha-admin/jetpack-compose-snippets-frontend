@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Eye, ExternalLink, Play, Pause, User } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { likeUnlikeSnippet } from "@/store/slices/snippetsSlice";
+import { useAuth } from "@/contexts/AuthContext";
+import toast from "react-hot-toast";
 
 // Mock snippet data structure
 const mockSnippet = {
@@ -46,6 +48,8 @@ export const SnippetCard = ({
   const [isLoaded, setIsLoaded] = useState(false);
   const [isLiked, setIsLiked] = useState(snippet.isLiked);
   const [likeCount, setLikeCount] = useState(snippet.likes);
+
+  const { user } = useAuth();
 
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((s) => s.snippets);
@@ -228,6 +232,10 @@ export const SnippetCard = ({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => {
+                if (user == null) {
+                  toast.error("Please log in to like this snippet.");
+                  return;
+                }
                 dispatch(likeUnlikeSnippet(snippet.slug));
                 // Optimistically update UI using local state
                 const newLikedState = !isLiked;

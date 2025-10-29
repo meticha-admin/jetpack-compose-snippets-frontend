@@ -54,7 +54,6 @@ export default function SnippetsPage() {
     fetchAllSnippets();
   };
 
-  console.log(snippets);
 
   return (
     <main className="min-h-screen bg-gray-950">

@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    await api.post("/auth/logout", {}, { withCredentials: true });
+    await api.get("/auth/logout", {}, { withCredentials: true });
     setUser(null);
     setLoading(false); // do NOT re-call fetchUser
   };

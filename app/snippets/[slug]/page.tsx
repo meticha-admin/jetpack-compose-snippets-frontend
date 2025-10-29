@@ -61,7 +61,6 @@ export default function SnippetDetailPage() {
         const response = await dispatch(
           fetchSingleSnippet(params.slug as string)
         ).unwrap();
-        console.log("Fetched snippet:", response);
         setSnippet(response);
 
         // Increment view count
@@ -76,8 +75,6 @@ export default function SnippetDetailPage() {
       fetchSnippet();
     }
   }, [params.slug]);
-
-  console.log("Snippet:", snippet);
 
   const handleCopyCode = async () => {
     if (snippet) {
@@ -344,9 +341,9 @@ export default function SnippetDetailPage() {
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <div className="font-medium text-white">
+                          <Link href={`/users/${snippet.user.username}`} className="font-medium text-white">
                             {snippet.user.username}
-                          </div>
+                          </Link>
                           <div className="text-sm text-gray-400">
                             Contributor
                           </div>
@@ -392,7 +389,7 @@ export default function SnippetDetailPage() {
                         className={`w-full ${
                           liked
                             ? "bg-red-600 hover:bg-red-700"
-                            : "bg-gradient-to-r from-red-600/20 to-pink-600/20 hover:from-red-600/30 hover:to-pink-600/30 border border-red-500/30 text-red-300 hover:text-white"
+                            : "bg-gradient-to-r from-red-600/20 to-pink-60  0/20 hover:from-red-600/30 hover:to-pink-600/30 border border-red-500/30 text-red-300 hover:text-white"
                         }`}
                       >
                         <Heart

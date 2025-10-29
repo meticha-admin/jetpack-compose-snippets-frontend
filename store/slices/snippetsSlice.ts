@@ -81,6 +81,27 @@ export const fetchSnippets = createAsyncThunk<
   }
 });
 
+// New: fetchSnippets action to get list of snippets
+export const fetchSnippetsByUser = createAsyncThunk<
+  SnippetResponseDto[],
+  String,
+  { rejectValue: string }
+>("snippets/fetchSnippetsByUser", async (username, { rejectWithValue }) => {
+  try {
+    const response = await api.get(`/snippets/by-user/${username}`, {
+      withCredentials: true,
+    });
+    // adapt depending on API shape
+    return response.data?.data.content ?? response.data.content ?? [];
+  } catch (err: any) {
+    const message =
+      err?.response?.data?.message ||
+      err?.message ||
+      "Failed to fetch snippets";
+    return rejectWithValue(message);
+  }
+});
+
 // New: fetchSingleSnippets action to get single of snippet
 export const fetchSingleSnippet = createAsyncThunk<
   SnippetResponseDto,
@@ -167,6 +188,24 @@ const snippetsSlice = createSlice({
         }
       )
       .addCase(fetchSnippets.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.payload ?? action.error.message ?? "Failed to fetch snippets";
+      })
+
+      // fetchSnippetsByUser handlers
+      .addCase(fetchSnippetsByUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchSnippetsByUser.fulfilled,
+        (state, action: PayloadAction<SnippetResponseDto[]>) => {
+          state.loading = false;
+          state.snippets = action.payload;
+        }
+      )
+      .addCase(fetchSnippetsByUser.rejected, (state, action) => {
         state.loading = false;
         state.error =
           action.payload ?? action.error.message ?? "Failed to fetch snippets";
