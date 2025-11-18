@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, Suspense } from "react";
 import { gsap } from "gsap";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
@@ -14,7 +14,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Image from "next/image";
 
-const Callback = () => {
+const CallbackContent = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -25,7 +25,6 @@ const Callback = () => {
   const code = searchParams.get("code");
 
   useEffect(() => {
-    // GSAP animation for login form
     gsap.fromTo(
       ".login-card",
       { opacity: 0, y: 50 },
@@ -85,6 +84,14 @@ const Callback = () => {
         </Card>
       </div>
     </>
+  );
+};
+
+const Callback = () => {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <CallbackContent />
+    </Suspense>
   );
 };
 

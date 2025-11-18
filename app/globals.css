@@ -95,6 +95,35 @@
   }
 }
 
+/*
+  This is the key part for the card "zoom and flip" animation.
+  It targets the view transition pseudo-elements that the browser creates.
+*/
+@keyframes zoom-and-flip-in {
+  from {
+    transform: scale(0.5) rotateY(90deg);
+    opacity: 0;
+  }
+}
+
+@keyframes zoom-and-flip-out {
+  to {
+    transform: scale(0.5) rotateY(90deg);
+    opacity: 0;
+  }
+}
+
+/* The ::view-transition-old is the outgoing page/state */
+::view-transition-old(snippet-*) {
+  animation: 350ms ease-out both zoom-and-flip-out;
+}
+
+/* The ::view-transition-new is the incoming page/state */
+::view-transition-new(snippet-*) {
+  animation: 350ms ease-in both zoom-and-flip-in;
+}
+
+
 /* Code block styling */
 .code-block {
   @apply bg-gray-900 border border-gray-800 rounded-lg;

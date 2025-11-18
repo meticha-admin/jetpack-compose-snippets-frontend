@@ -105,6 +105,7 @@ export const SnippetCard = ({
       className="group relative bg-[#1e1e2f] rounded-3xl shadow-md border border-[#2a2a3b] overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-[#3a3a4f] hover:scale-[1.02]"
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
+      style={{ viewTransitionName: `snippet-${snippet.slug}` }}
     >
       {/* Featured Badge */}
       {snippet.featured && (

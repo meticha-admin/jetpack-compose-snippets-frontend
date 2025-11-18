@@ -1,6 +1,6 @@
 "use client";
 
-import type React from "react";
+import React, { startTransition } from "react";
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -50,7 +50,9 @@ export default function SnippetsPage() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    setCurrentPage(1);
+    startTransition(() => {
+      setCurrentPage(1);
+    });
     fetchAllSnippets();
   };
 
@@ -102,9 +104,13 @@ export default function SnippetsPage() {
               {/* Filters */}
               <SnippetFilters
                 selectedTags={selectedTags}
-                onTagsChange={setSelectedTags}
+                onTagsChange={(tags) => startTransition(() => setSelectedTags(tags))}
                 sortBy={sortBy}
-                onSortChange={setSortBy}
+                onSortChange={(sort) => {
+                  startTransition(() => {
+                    setSortBy(sort);
+                  });
+                }}
               />
             </div>
           </motion.div>
@@ -276,10 +282,12 @@ export default function SnippetsPage() {
               <p className="text-gray-400 text-lg mb-4">No snippets found</p>
               <Button
                 onClick={() => {
-                  setSearchQuery("");
-                  setSelectedTags([]);
-                  setSortBy("newest");
-                  setCurrentPage(1);
+                  startTransition(() => {
+                    setSearchQuery("");
+                    setSelectedTags([]);
+                    setSortBy("newest");
+                    setCurrentPage(1);
+                  });
                 }}
                 variant="outline"
                 className="border-gray-600 text-white hover:bg-gray-800"
@@ -318,7 +326,7 @@ export default function SnippetsPage() {
                 >
                   <Button
                     onClick={() =>
-                      setCurrentPage((prev) => Math.max(1, prev - 1))
+                      startTransition(() => setCurrentPage((p) => p - 1))
                     }
                     disabled={currentPage === 1}
                     variant="outline"
@@ -332,7 +340,9 @@ export default function SnippetsPage() {
                       (page) => (
                         <Button
                           key={page}
-                          onClick={() => setCurrentPage(page)}
+                          onClick={() =>
+                            startTransition(() => setCurrentPage(page))
+                          }
                           variant={currentPage === page ? "default" : "outline"}
                           className={
                             currentPage === page
@@ -348,7 +358,7 @@ export default function SnippetsPage() {
 
                   <Button
                     onClick={() =>
-                      setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                      startTransition(() => setCurrentPage((p) => p + 1))
                     }
                     disabled={currentPage === totalPages}
                     variant="outline"
